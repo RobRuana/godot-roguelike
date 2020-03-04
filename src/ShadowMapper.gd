@@ -11,7 +11,7 @@ var draw_polygons = []
 var _board
 
 # XXX is ShadowMapper not needed anymore?
-func init(board: TileMap) -> void:
+func init(board: Board) -> void:
 	add_occluders_from_board(board)
 
 
@@ -31,7 +31,7 @@ func _draw():
 func get_occlusion_polygons_for_world() -> Array:
 	if (!shadows_enabled):
 		return []
-		
+
 	var map_polygons : Array = get_polygons_to_occlude_for_map()
 	var occ_polygons : Array = []
 	for map_poly in map_polygons:

@@ -29,10 +29,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/entities/Backpack.gd"
 }, {
-"base": "TileMap",
+"base": "Node2D",
 "class": "Board",
 "language": "GDScript",
 "path": "res://src/Board.gd"
+}, {
+"base": "TileMap",
+"class": "BoardMap2D",
+"language": "GDScript",
+"path": "res://src/BoardMap2D.gd"
 }, {
 "base": "StatusEffect",
 "class": "BurningStatusEffect",
@@ -229,7 +234,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/status_effects/StatusEffect.gd"
 }, {
-"base": "Node2D",
+"base": "Node",
 "class": "Tile",
 "language": "GDScript",
 "path": "res://src/Tile.gd"
@@ -255,6 +260,7 @@ _global_script_class_icons={
 "BSP": "",
 "Backpack": "",
 "Board": "",
+"BoardMap2D": "",
 "BurningStatusEffect": "",
 "CharacterInfoModal": "",
 "Console": "",
@@ -315,6 +321,10 @@ events="*res://src/events.gd"
 window/size/width=1280
 window/size/height=768
 window/stretch/aspect="keep"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "MagicaVoxelImporter" )
 
 [importer_defaults]
 

@@ -1,0 +1,13 @@
+[remap]
+
+importer="MagicaVoxel-Importer"
+type="Mesh"
+path="res://.import/wall.vox-aaa3f8624d371c9fa972dfc13177f188.mesh"
+
+[deps]
+
+source_file="res://assets/wall.vox"
+dest_files=[ "res://.import/wall.vox-aaa3f8624d371c9fa972dfc13177f188.mesh" ]
+
+[params]
+

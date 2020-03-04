@@ -1,9 +1,11 @@
-extends TileMap
+extends Node2D
 class_name Board
 
 onready var _astar = AStar.new()
+onready var _board_map = $BoardMap2D
 
 export (Vector2) var board_size
+export (Vector2) var cell_size setget set_cell_size, get_cell_size
 export (int) var tile_size
 export (bool) var collisions_enabled
 
@@ -12,7 +14,18 @@ var _bsp_map_nodes := []
 var _walkable_cells := []
 
 func _ready():
+	set_cell_size(cell_size)
 	globals.board = self
+
+func set_cell_size(value: Vector2) -> void:
+	cell_size = value
+	_board_map.cell_size = value
+
+func get_cell_size() -> Vector2:
+	return _board_map.cell_size if cell_size == Vector2.ZERO else cell_size
+
+func get_used_rect() -> Rect2:
+	return _board_map.get_used_rect()
 
 func _init_grid(size: Vector2) -> Array:
 	var result = []
@@ -24,7 +37,7 @@ func _init_grid(size: Vector2) -> Array:
 			var tile = Tile.new(map_pos)
 			result[x].append(tile)
 			tile.set_is_wall(true)
-			set_cellv(map_pos, globals.CELL_TYPES.WALL)
+			_board_map.set_cell_type(map_pos, globals.CELL_TYPES.WALL)
 			events.emit_signal("tile_was_obscured", map_pos)
 	return result
 
@@ -43,7 +56,7 @@ func init_map():
 			for hall in halls:
 				if Rect2(Vector2(), board_size).encloses(hall):
 					fill_rect(hall, globals.CELL_TYPES.FLOOR)
-	for cell in get_used_cells_by_id(globals.CELL_TYPES.FLOOR):
+	for cell in _board_map.get_cells_by_type(globals.CELL_TYPES.FLOOR):
 		var idx = get_map_pos_index(cell)
 		_astar.add_point(idx, Vector3(cell.x, cell.y, 0.0))
 	_astar_connect_walkable_cells(_astar)
@@ -67,6 +80,12 @@ func _astar_connect_walkable_cells(astar: AStar):
 			if not astar.has_point(relative_index):
 				continue
 			astar.connect_points(point, relative_index, false)
+
+func world_to_map(world_pos: Vector2) -> Vector2:
+	return _board_map.world_to_map(world_pos)
+
+func map_to_world(map_pos: Vector2, ignore_half_ofs: bool = false) -> Vector2:
+	return _board_map.map_to_world(map_pos, ignore_half_ofs)
 
 func find_path(map_pos_start: Vector2, map_pos_end: Vector2) -> Array:
 	var start := get_map_pos_index(map_pos_start)
@@ -96,7 +115,7 @@ func populate_rooms() -> void:
 func add_label_at(map_pos: Vector2, text: String) -> void:
 	var label = Label.new()
 	label.text = text
-	label.rect_position = map_to_world(map_pos)
+	label.rect_position = _board_map.map_to_world(map_pos)
 	add_child(label)
 
 
@@ -121,7 +140,7 @@ func fill_rect(region: Rect2, cell_type: int) -> void:
 			var region_pos = Vector2(x, y)
 			var tile := get_tile_at_map_pos(region_pos)
 			tile.set_is_wall(false)
-			set_cellv(region_pos, cell_type)
+			_board_map.set_cell_type(region_pos, cell_type)
 
 func get_tile_at_map_pos(map_pos: Vector2) -> Tile:
 	if map_pos.x >= board_size.x or map_pos.y >= board_size.y:
@@ -164,7 +183,7 @@ func contains(map_pos: Vector2) -> bool:
 
 
 func is_wall(map_pos: Vector2) -> bool:
-	var cell_type = get_cellv(map_pos)
+	var cell_type = _board_map.get_cell_type(map_pos)
 	if cell_type == -1:
 		return false
 	return get_tile_at_map_pos(map_pos).is_wall

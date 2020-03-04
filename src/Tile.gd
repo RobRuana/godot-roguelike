@@ -1,4 +1,4 @@
-extends Node2D
+extends Node
 class_name Tile
 
 var pos: Vector2
